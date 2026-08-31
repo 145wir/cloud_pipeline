@@ -1,0 +1,40 @@
+services:
+
+  # ==============================
+  # FastAPI Backend
+  # ==============================
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+
+    container_name: image_rag_backend
+
+    env_file:
+      - .env
+
+    expose:
+      - "8000"
+
+    restart: unless-stopped
+
+
+  # ==============================
+  # React + Nginx
+  # ==============================
+
+  frontend:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+
+    container_name: image_rag_frontend
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
