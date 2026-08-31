@@ -24,7 +24,14 @@ pipeline {
                     sh '''
                         rm -f .env
                         cp "$ENV_FILE" .env
+
+                        # 잘못된 DATABASE_URL=DATABASE_URL= 형식을 정상화
+                        sed -i 's/^DATABASE_URL=DATABASE_URL=/DATABASE_URL=/' .env
+
                         chmod 600 .env
+
+                        echo "DATABASE_URL 설정 확인:"
+                        grep '^DATABASE_URL=' .env | sed 's/:\\/\\/[^:]*:[^@]*@/:\\/\\/****:****@/'
                     '''
                 }
             }
