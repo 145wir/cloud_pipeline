@@ -1,21 +1,17 @@
 pipeline {
-
     agent any
-
-
-    environment {
-        COMPOSE_PROJECT_NAME = "image-rag"
-    }
-
 
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                git(
+                    url: 'https://github.com/145wir/cloud_pipeline.git',
+                    branch: 'main',
+                    credentialsId: 'username-id'
+                )
             }
         }
-
 
         stage('Environment') {
             steps {
@@ -26,43 +22,37 @@ pipeline {
                     )
                 ]) {
                     sh '''
+                        rm -f .env
                         cp "$ENV_FILE" .env
+                        chmod 600 .env
                     '''
                 }
             }
         }
 
-
         stage('Build') {
             steps {
-                sh '''
-                    docker compose build --no-cache
-                '''
+                sh 'docker compose build --no-cache'
             }
         }
-
 
         stage('Deploy') {
             steps {
-                sh '''
-                    docker compose down
-                    docker compose up -d
-                '''
+                sh 'docker compose up -d'
             }
         }
 
-
         stage('Check') {
             steps {
-                sh '''
-                    docker compose ps
-                '''
+                sh 'docker compose ps'
             }
         }
     }
 
-
     post {
+        always {
+            sh 'docker image prune -f || true'
+        }
 
         success {
             echo 'AWS 배포 성공'
@@ -70,12 +60,6 @@ pipeline {
 
         failure {
             echo 'AWS 배포 실패'
-        }
-
-        always {
-            sh '''
-                docker image prune -f
-            '''
         }
     }
 }
