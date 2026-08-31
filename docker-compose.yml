@@ -9,13 +9,20 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
-    container_name: image-rag-backend
+    container_name: cloud-backend
+
+    environment:
+      DATABASE_URL: postgresql://postgres:1234@postgres:5432/cloud_pipeline
+      REDIS_URL: redis://redis:6379/0
 
     env_file:
       - .env
 
-    expose:
-      - "8000"
+    depends_on:
+      - postgres
+
+    networks:
+      - app-network
 
     restart: unless-stopped
 
@@ -38,3 +45,28 @@ services:
       - backend
 
     restart: unless-stopped
+
+
+  postgres:
+    image: postgres:16
+
+    container_name: cloud-postgres
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: cloud_pipeline
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - app-network
+
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+
+

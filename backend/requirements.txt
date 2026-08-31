@@ -1,7 +1,15 @@
 fastapi
-uvicorn
+uvicorn[standard]
 python-multipart
+
 openai
-python-dotenv
 pydantic
 pydantic-settings
+
+psycopg[binary]
+redis
+
+python-jose[cryptography]
+passlib[bcrypt]
+
+email-validator
