@@ -1,9 +1,5 @@
 services:
 
-  # ==============================
-  # FastAPI Backend
-  # ==============================
-
   backend:
     build:
       context: ./backend
@@ -20,16 +16,13 @@ services:
 
     depends_on:
       - postgres
+      - redis
 
     networks:
       - app-network
 
     restart: unless-stopped
 
-
-  # ==============================
-  # React + Nginx
-  # ==============================
 
   frontend:
     build:
@@ -43,6 +36,9 @@ services:
 
     depends_on:
       - backend
+
+    networks:
+      - app-network
 
     restart: unless-stopped
 
@@ -65,12 +61,22 @@ services:
 
     restart: unless-stopped
 
+
+  redis:
+    image: redis:7
+
+    container_name: cloud-redis
+
+    networks:
+      - app-network
+
+    restart: unless-stopped
+
+
 volumes:
   postgres_data:
+
 
 networks:
   app-network:
     driver: bridge
-
-
-
