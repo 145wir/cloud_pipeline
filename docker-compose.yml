@@ -8,14 +8,12 @@ services:
     container_name: cloud-backend
 
     environment:
-      DATABASE_URL: postgresql://postgres:1234@postgres:5432/cloud_pipeline
       REDIS_URL: redis://redis:6379/0
 
     env_file:
       - .env
 
     depends_on:
-      - postgres
       - redis
 
     networks:
@@ -43,25 +41,6 @@ services:
     restart: unless-stopped
 
 
-  postgres:
-    image: postgres:16
-
-    container_name: cloud-postgres
-
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: cloud_pipeline
-
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-    networks:
-      - app-network
-
-    restart: unless-stopped
-
-
   redis:
     image: redis:7
 
@@ -71,10 +50,6 @@ services:
       - app-network
 
     restart: unless-stopped
-
-
-volumes:
-  postgres_data:
 
 
 networks:
